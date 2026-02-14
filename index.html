@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 ThermoForge Pro | Advanced Thermodynamic Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --light-grey: #d8d8d8;
+            --off-white: #f0f0f0;
+            --deep-purple: #610083;
+            --soft-rose: #d0b8b8;
+            --pale-pink: #ffeaea;
+
+            --primary: var(--deep-purple);
+            --primary-light: #8a2be2;
+            --bg-dark: #0a0a1a;
+            --bg-medium: #1a1a2e;
+            --text-light: var(--pale-pink);
+            --text-muted: var(--soft-rose);
+            --border-light: rgba(255, 255, 255, 0.15);
+            --border-accent: var(--deep-purple);
+
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            --shadow-hover: 0 25px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            background: linear-gradient(145deg, #0a0a1a 0%, #1a1a2e 50%, #2a1a3a 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Night sky with twinkling stars */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 20%),
+                        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 25%),
+                        radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 15%),
+                        radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 30%),
+                        radial-gradient(circle at 10% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 20%);
+            pointer-events: none;
+            z-index: 0;
+            animation: starsPulse 4s ease-in-out infinite;
+        }
+
+        /* Additional stars */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 15px 60px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 72px 430px, #fff, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 150px 280px, #ffeaea, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 230px 150px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 320px 520px, #d0b8b8, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 450px 230px, #fff, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 550px 380px, #ffeaea, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 630px 120px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 720px 450px, #d0b8b8, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 820px 280px, #fff, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 920px 180px, #ffeaea, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 1020px 520px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 1120px 350px, #d0b8b8, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 1220px 90px, #fff, rgba(0,0,0,0)),
+                radial-gradient(3px 3px at 1320px 480px, #ffeaea, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 1420px 220px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 1520px 380px, #d0b8b8, rgba(0,0,0,0));
+            background-repeat: repeat;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.7;
+            animation: twinkle 5s ease-in-out infinite;
+        }
+
+        @keyframes starsPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        .container { 
+            max-width: 1600px; 
+            margin: 0 auto; 
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            background: rgba(97, 0, 131, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            border: 1px solid var(--deep-purple);
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,234,234,0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: var(--pale-pink);
+            margin-bottom: 15px;
+            font-weight: 800;
+            text-shadow: 0 0 20px rgba(97, 0, 131, 0.8);
+            position: relative;
+        }
+
+        .header p {
+            color: var(--soft-rose);
+            font-size: 1.2rem;
+            position: relative;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 300px;
+            margin: 0 auto 40px;
+            padding: 25px;
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid var(--deep-purple);
+            box-shadow: var(--shadow);
+        }
+
+        .btn {
+            padding: 18px 25px;
+            border: none;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            color: var(--pale-pink);
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .btn:hover::after {
+            opacity: 1;
+        }
+
+        .btn-primary { background: var(--deep-purple); color: var(--pale-pink); }
+        .btn-success { background: var(--success); }
+        .btn-warning { background: var(--warning); }
+        .btn-danger { background: var(--danger); }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+            filter: brightness(1.1);
+            border-color: var(--pale-pink);
+        }
+
+        .test-cases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .test-case-card {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid var(--soft-rose);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,234,234,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .test-case-card:hover::before {
+            left: 100%;
+        }
+
+        .test-case-card:hover, .test-case-card.active {
+            transform: translateY(-8px);
+            border-color: var(--deep-purple);
+            background: rgba(97, 0, 131, 0.4);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .test-case-card h3 {
+            color: var(--pale-pink);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .test-case-card p {
+            color: var(--soft-rose);
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+
+        .section {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid var(--soft-rose);
+            box-shadow: var(--shadow);
+        }
+
+        .section h3 {
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--pale-pink);
+            font-weight: 700;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--soft-rose);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px 18px;
+            border: 2px solid var(--soft-rose);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--pale-pink);
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--deep-purple);
+            background: rgba(97, 0, 131, 0.3);
+            box-shadow: 0 0 0 3px rgba(97, 0, 131, 0.3);
+        }
+
+        .input-field::placeholder { color: rgba(255, 234, 234, 0.3); }
+
+        .error {
+            border-color: var(--danger) !important;
+            background: rgba(239, 68, 68, 0.2);
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid;
+            background: rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover { 
+            transform: translateY(-3px); 
+            background: rgba(97, 0, 131, 0.3);
+        }
+
+        .status-green { border-left-color: var(--success); }
+        .status-yellow { border-left-color: var(--warning); }
+        .status-red { border-left-color: var(--danger); }
+
+        .result-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--soft-rose);
+        }
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--pale-pink);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(10, 10, 26, 0.95);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner {
+            width: 50px; height: 50px;
+            border: 3px solid rgba(97, 0, 131, 0.3);
+            border-top: 3px solid var(--deep-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-fire"></i> ThermoForge Pro</h1>
+            <p>Advanced Thermodynamic Analysis Suite</p>
+        </div>
+
+        <div class="control-panel">
+            <button class="btn btn-primary" id="runBtn">
+                <i class="fas fa-play"></i> Run Analysis
+            </button>
+            <button class="btn btn-success" id="jsonBtn">
+                <i class="fas fa-file-code"></i> Export JSON
+            </button>
+            <button class="btn btn-warning" id="pdfBtn">
+                <i class="fas fa-file-pdf"></i> Export PDF
+            </button>
+            <button class="btn btn-danger" id="resetBtn">
+                <i class="fas fa-sync-alt"></i> Reset All
+            </button>
+        </div>
+
+        <div class="test-cases">
+            <div class="test-case-card active" data-case="rankine">
+                <h3><i class="fas fa-industry"></i> Rankine Cycle</h3>
+                <p><strong>Steam Power Plant</strong><br>η_th • Work Output • Heat Transfer</p>
+            </div>
+            <div class="test-case-card" data-case="otto">
+                <h3><i class="fas fa-car"></i> Otto Cycle</h3>
+                <p><strong>Spark Ignition</strong><br>Efficiency • Temperatures • MEP</p>
+            </div>
+            <div class="test-case-card" data-case="heatx">
+                <h3><i class="fas fa-exchange-alt"></i> Heat Exchanger</h3>
+                <p><strong>Counterflow</strong><br>LMTD • NTU • Effectiveness</p>
+            </div>
+            <div class="test-case-card" data-case="ref">
+                <h3><i class="fas fa-snowflake"></i> Refrigeration</h3>
+                <p><strong>Vapor Compression</strong><br>COP • Capacity • Work</p>
+            </div>
+            <div class="test-case-card" data-case="conduction">
+                <h3><i class="fas fa-layer-group"></i> Composite Wall</h3>
+                <p><strong>Conduction</strong><br>Resistance • Heat Flux • T-Drop</p>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <div class="section" id="rankine-section">
+                <h3><i class="fas fa-industry"></i> Rankine Cycle Analysis</h3>
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label>Boiler Pressure (kPa)</label>
+                        <input type="number" class="input-field" id="rankine-pb" value="3000" min="100" max="20000">
+                    </div>
+                    <div class="form-group">
+                        <label>Condenser Pressure (kPa)</label>
+                        <input type="number" class="input-field" id="rankine-pc" value="10" min="1" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Temperature (°C)</label>
+                        <input type="number" class="input-field" id="rankine-tmax" value="500" min="100" max="600">
+                    </div>
+                    <div class="form-group">
+                        <label>Turbine Efficiency (%)</label>
+                        <input type="number" class="input-field" id="rankine-etat" value="85" min="70" max="95">
+                    </div>
+                    <div class="form-group">
+                        <label>Pump Efficiency (%)</label>
+                        <input type="number" class="input-field" id="rankine-etap" value="80" min="70" max="95">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" id="results-section" style="display: none;">
+                <h3><i class="fas fa-chart-bar"></i> Analysis Results</h3>
+                <div class="results-grid" id="results-grid"></div>
+                <div class="chart-container">
+                    <canvas id="resultChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden input sections -->
+        <div class="section" id="otto-section" style="display: none;">
+            <h3><i class="fas fa-car"></i> Otto Cycle Analysis</h3>
+            <div class="input-grid">
+                <div class="form-group"><label>Compression Ratio</label><input type="number" class="input-field" id="otto-r" value="8" min="4" max="20"></div>
+                <div class="form-group"><label>Max Temp (K)</label><input type="number" class="input-field" id="otto-t3" value="2200" min="1000" max="3000"></div>
+                <div class="form-group"><label>γ (Cp/Cv)</label><input type="number" class="input-field" id="otto-gamma" value="1.4" min="1.3" max="1.67"></div>
+            </div>
+        </div>
+
+        <div class="section" id="heatx-section" style="display: none;">
+            <h3><i class="fas fa-exchange-alt"></i> Heat Exchanger Analysis</h3>
+            <div class="input-grid">
+                <div class="form-group"><label>Hot Inlet Temp (°C)</label><input type="number" class="input-field" id="hx-thi" value="120" min="50" max="300"></div>
+                <div class="form-group"><label>Hot Outlet Temp (°C)</label><input type="number" class="input-field" id="hx-tho" value="60" min="30" max="150"></div>
+                <div class="form-group"><label>Cold Inlet Temp (°C)</label><input type="number" class="input-field" id="hx-tci" value="25" min="0" max="80"></div>
+                <div class="form-group"><label>Cold Outlet Temp (°C)</label><input type="number" class="input-field" id="hx-tco" value="80" min="20" max="120"></div>
+                <div class="form-group"><label>UA Value (W/K)</label><input type="number" class="input-field" id="hx-ua" value="2000" min="100" max="10000"></div>
+                <div class="form-group"><label>Cmin (W/K)</label><input type="number" class="input-field" id="hx-cmin" value="2000" min="100" max="10000"></div>
+            </div>
+        </div>
+
+        <div class="section" id="ref-section" style="display: none;">
+            <h3><i class="fas fa-snowflake"></i> Refrigeration Analysis</h3>
+            <div class="input-grid">
+                <div class="form-group"><label>Evaporator Temp (°C)</label><input type="number" class="input-field" id="ref-tevap" value="-10" min="-50" max="10"></div>
+                <div class="form-group"><label>Condenser Temp (°C)</label><input type="number" class="input-field" id="ref-tcond" value="40" min="20" max="80"></div>
+                <div class="form-group"><label>Compressor Eff (%)</label><input type="number" class="input-field" id="ref-etac" value="80" min="50" max="95"></div>
+                <div class="form-group"><label>Mass Flow (kg/s)</label><input type="number" class="input-field" id="ref-mdot" value="0.1" min="0.01" max="1"></div>
+            </div>
+        </div>
+
+        <div class="section" id="conduction-section" style="display: none;">
+            <h3><i class="fas fa-layer-group"></i> Composite Wall Analysis</h3>
+            <div class="input-grid">
+                <div class="form-group"><label>Hot Side Temp (°C)</label><input type="number" class="input-field" id="cond-th" value="100" min="50" max="500"></div>
+                <div class="form-group"><label>Cold Side Temp (°C)</label><input type="number" class="input-field" id="cond-tc" value="20" min="0" max="100"></div>
+                <div class="form-group"><label>Layer 1 k (W/mK)</label><input type="number" class="input-field" id="cond-k1" value="50" min="0.1" max="400"></div>
+                <div class="form-group"><label>Layer 1 L (m)</label><input type="number" class="input-field" id="cond-l1" value="0.02" min="0.001" max="0.5"></div>
+                <div class="form-group"><label>Layer 2 k (W/mK)</label><input type="number" class="input-field" id="cond-k2" value="1" min="0.1" max="50"></div>
+                <div class="form-group"><label>Layer 2 L (m)</label><input type="number" class="input-field" id="cond-l2" value="0.1" min="0.001" max="0.5"></div>
+                <div class="form-group"><label>Area (m²)</label><input type="number" class="input-field" id="cond-area" value="1" min="0.1" max="100"></div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div style="margin-top: 20px; font-size: 1.2rem;">Analyzing thermodynamic cycle...</div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentCase = 'rankine';
+        let results = null;
+        let chart = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Bind all buttons
+            document.getElementById('runBtn').addEventListener('click', runAnalysis);
+            document.getElementById('jsonBtn').addEventListener('click', saveResults);
+            document.getElementById('pdfBtn').addEventListener('click', exportPDF);
+            document.getElementById('resetBtn').addEventListener('click', resetAll);
+
+            // Bind test case cards
+            document.querySelectorAll('.test-case-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    loadTestCase(this.dataset.case, e);
+                });
+            });
+
+            console.log('ThermoForge Pro initialized - All buttons functional');
+        });
+
+        function validateInputs(caseName) {
+            const section = document.getElementById(caseName + '-section');
+            if (!section) return false;
+
+            const inputs = section.querySelectorAll('.input-field');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                input.classList.remove('error');
+                const value = parseFloat(input.value);
+                if (isNaN(value) || input.value.trim() === '') {
+                    input.classList.add('error');
+                    isValid = false;
+                }
+            });
+
+            return isValid;
+        }
+
+        function loadTestCase(caseName, event) {
+            currentCase = caseName;
+            
+            // Update active card
+            document.querySelectorAll('.test-case-card').forEach(c => c.classList.remove('active'));
+            event.target.closest('.test-case-card').classList.add('active');
+            
+            // Switch sections
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(caseName + '-section').style.display = 'block';
+            document.getElementById('results-section').style.display = 'none';
+            results = null;
+
+            // Destroy chart if exists
+            if (chart) {
+                chart.destroy();
+                chart = null;
+            }
+        }
+
+        function runAnalysis() {
+            if (!validateInputs(currentCase)) {
+                alert('Please fix all highlighted inputs');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'flex';
+            
+            setTimeout(() => {
+                results = calculateResults(currentCase);
+                displayResults(results);
+                document.getElementById('loading').style.display = 'none';
+            }, 1000);
+        }
+
+        function calculateResults(caseName) {
+            switch(caseName) {
+                case 'rankine': return calculateRankine();
+                case 'otto': return calculateOtto();
+                case 'heatx': return calculateHeatExchanger();
+                case 'ref': return calculateRefrigeration();
+                case 'conduction': return calculateConduction();
+                default: return { error: 'Unknown case' };
+            }
+        }
+
+        function calculateRankine() {
+            const pb = parseFloat(document.getElementById('rankine-pb').value);
+            const pc = parseFloat(document.getElementById('rankine-pc').value);
+            const tmax = parseFloat(document.getElementById('rankine-tmax').value);
+            const etat = parseFloat(document.getElementById('rankine-etat').value) / 100;
+            const etap = parseFloat(document.getElementById('rankine-etap').value) / 100;
+
+            const hf1 = 191.8; const vf1 = 0.00101;
+            const wp = vf1 * (pb - pc) / 10 / etap;
+            const h2 = hf1 + wp;
+            const h3 = 3450 + (tmax - 500) * 2.1;
+            const h4s = 2300;
+            const wt = (h3 - h4s) * etat;
+            const wnet = wt - wp;
+            const qin = h3 - h2;
+            const eta = wnet / qin;
+
+            return {
+                'Efficiency': (eta * 100).toFixed(1) + '%',
+                'Net Work': wnet.toFixed(0) + ' kJ/kg',
+                'Turbine Work': wt.toFixed(0) + ' kJ/kg',
+                'Heat Input': qin.toFixed(0) + ' kJ/kg',
+                status: eta > 0.3 ? 'green' : 'yellow',
+                chartData: { wnet, wt, qin, eta }
+            };
+        }
+
+        function calculateOtto() {
+            const r = parseFloat(document.getElementById('otto-r').value);
+            const t3 = parseFloat(document.getElementById('otto-t3').value);
+            const gamma = parseFloat(document.getElementById('otto-gamma').value);
+            
+            const t1 = 300;
+            const t2 = t1 * Math.pow(r, gamma-1);
+            const eta = 1 - 1/Math.pow(r, gamma-1);
+            const t4 = t3 / Math.pow(r, gamma-1);
+            
+            return {
+                'Efficiency': (eta * 100).toFixed(1) + '%',
+                'T2': t2.toFixed(0) + ' K',
+                'T3': t3 + ' K',
+                'T4': t4.toFixed(0) + ' K',
+                status: eta > 0.5 ? 'green' : 'yellow',
+                chartData: { t1, t2, t3, t4 }
+            };
+        }
+
+        function calculateHeatExchanger() {
+            const thi = parseFloat(document.getElementById('hx-thi').value);
+            const tho = parseFloat(document.getElementById('hx-tho').value);
+            const tci = parseFloat(document.getElementById('hx-tci').value);
+            const tco = parseFloat(document.getElementById('hx-tco').value);
+            const UA = parseFloat(document.getElementById('hx-ua').value);
+            const Cmin = parseFloat(document.getElementById('hx-cmin').value);
+
+            const q = Cmin * (tco - tci);
+            const dt1 = thi - tco;
+            const dt2 = tho - tci;
+            const LMTD = (dt1 - dt2) / Math.log(dt1/dt2);
+            const NTU = UA / Cmin;
+            
+            return {
+                'Heat Rate': (q/1000).toFixed(1) + ' kW',
+                'LMTD': LMTD.toFixed(1) + '°C',
+                'NTU': NTU.toFixed(2),
+                status: NTU > 1 ? 'green' : 'yellow',
+                chartData: { thi, tho, tci, tco }
+            };
+        }
+
+        function calculateRefrigeration() {
+            const Te = parseFloat(document.getElementById('ref-tevap').value) + 273;
+            const Tc = parseFloat(document.getElementById('ref-tcond').value) + 273;
+            const eta = parseFloat(document.getElementById('ref-etac').value) / 100;
+            const mdot = parseFloat(document.getElementById('ref-mdot').value);
+
+            const cop_carnot = Te / (Tc - Te);
+            const cop = cop_carnot * 0.6 * eta;
+            const ql = mdot * 200;
+            const wc = ql / cop;
+            
+            return {
+                'COP': cop.toFixed(2),
+                'Cooling': ql.toFixed(1) + ' kW',
+                'Compressor': wc.toFixed(1) + ' kW',
+                status: cop > 2.5 ? 'green' : 'yellow',
+                chartData: { cop, ql, wc }
+            };
+        }
+
+        function calculateConduction() {
+            const Th = parseFloat(document.getElementById('cond-th').value);
+            const Tc = parseFloat(document.getElementById('cond-tc').value);
+            const k1 = parseFloat(document.getElementById('cond-k1').value);
+            const L1 = parseFloat(document.getElementById('cond-l1').value);
+            const k2 = parseFloat(document.getElementById('cond-k2').value);
+            const L2 = parseFloat(document.getElementById('cond-l2').value);
+            const A = parseFloat(document.getElementById('cond-area').value);
+
+            const R1 = L1 / (k1 * A);
+            const R2 = L2 / (k2 * A);
+            const Rtot = R1 + R2;
+            const Q = (Th - Tc) / Rtot;
+            const T1 = Th - Q * R1;
+            
+            return {
+                'Heat Flux': (Q/A).toFixed(0) + ' W/m²',
+                'Heat Rate': Q.toFixed(0) + ' W',
+                'Total R': Rtot.toFixed(3) + ' K/W',
+                status: Rtot > 0.1 ? 'green' : 'yellow',
+                chartData: { Th, T1, Tc, R1, R2, Rtot }
+            };
+        }
+
+        function displayResults(data) {
+            const grid = document.getElementById('results-grid');
+            document.getElementById('results-section').style.display = 'block';
+            
+            grid.innerHTML = Object.entries(data)
+                .filter(([k]) => !k.includes('status') && !k.includes('chartData'))
+                .map(([key, value]) => {
+                    const status = data.status;
+                    return `
+                        <div class="result-card status-${status}">
+                            <div class="result-title">${key}</div>
+                            <div class="result-value">${value}</div>
+                        </div>
+                    `;
+                }).join('');
+
+            // Update chart
+            updateChart(data, currentCase);
+        }
+
+        function updateChart(data, caseName) {
+            const ctx = document.getElementById('resultChart').getContext('2d');
+            
+            // Destroy existing chart
+            if (chart) {
+                chart.destroy();
+            }
+
+            // Chart options with theme colors
+            const options = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#ffeaea' } // pale pink
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: { color: '#ffeaea' },
+                        grid: { color: 'rgba(97,0,131,0.3)' } // deep purple tint
+                    },
+                    x: {
+                        ticks: { color: '#ffeaea' },
+                        grid: { color: 'rgba(97,0,131,0.3)' }
+                    }
+                }
+            };
+
+            switch(caseName) {
+                case 'rankine': {
+                    const { wnet, wt, qin, eta } = data.chartData;
+                    chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Net Work', 'Turbine Work', 'Heat Input', 'Efficiency (x100)'],
+                            datasets: [{
+                                label: 'Energy (kJ/kg) / Efficiency x100',
+                                data: [wnet, wt, qin, eta * 100],
+                                backgroundColor: ['#610083', '#610083', '#d0b8b8', '#10b981'],
+                                borderColor: '#ffeaea',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: options
+                    });
+                    break;
+                }
+                case 'otto': {
+                    const { t1, t2, t3, t4 } = data.chartData;
+                    chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['State 1', 'State 2', 'State 3', 'State 4'],
+                            datasets: [{
+                                label: 'Temperature (K)',
+                                data: [t1, t2, t3, t4],
+                                backgroundColor: '#610083',
+                                borderColor: '#610083',
+                                tension: 0.1,
+                                fill: false
+                            }]
+                        },
+                        options: options
+                    });
+                    break;
+                }
+                case 'heatx': {
+                    const { thi, tho, tci, tco } = data.chartData;
+                    chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Inlet', 'Outlet'],
+                            datasets: [
+                                {
+                                    label: 'Hot Stream (°C)',
+                                    data: [thi, tho],
+                                    borderColor: '#ef4444',
+                                    backgroundColor: 'rgba(239,68,68,0.2)',
+                                    tension: 0.1
+                                },
+                                {
+                                    label: 'Cold Stream (°C)',
+                                    data: [tci, tco],
+                                    borderColor: '#10b981',
+                                    backgroundColor: 'rgba(16,185,129,0.2)',
+                                    tension: 0.1
+                                }
+                            ]
+                        },
+                        options: options
+                    });
+                    break;
+                }
+                case 'ref': {
+                    const { cop, ql, wc } = data.chartData;
+                    chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['COP', 'Cooling (kW)', 'Compressor (kW)'],
+                            datasets: [{
+                                label: 'Refrigeration Cycle',
+                                data: [cop, ql, wc],
+                                backgroundColor: ['#10b981', '#610083', '#ef4444'],
+                                borderColor: '#ffeaea',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: options
+                    });
+                    break;
+                }
+                case 'conduction': {
+                    const { Th, T1, Tc } = data.chartData;
+                    chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Hot Side', 'Interface', 'Cold Side'],
+                            datasets: [{
+                                label: 'Temperature (°C)',
+                                data: [Th, T1, Tc],
+                                backgroundColor: '#610083',
+                                borderColor: '#610083',
+                                tension: 0.1,
+                                fill: false
+                            }]
+                        },
+                        options: options
+                    });
+                    break;
+                }
+            }
+        }
+
+        function saveResults() {
+            if (!results) {
+                alert('Run analysis first!');
+                return;
+            }
+            
+            // Extract only the display results (filter out internal data)
+            const displayResults = {};
+            Object.entries(results).forEach(([key, value]) => {
+                if (key !== 'status' && key !== 'chartData') {
+                    displayResults[key] = value;
+                }
+            });
+            
+            const exportData = {
+                case: currentCase,
+                results: displayResults,
+                time: new Date().toLocaleString()
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `thermo-${currentCase}-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportPDF() {
+            if (!results) {
+                alert('Run analysis first!');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Title - Deep Purple
+            doc.setFontSize(22);
+            doc.setTextColor(97, 0, 131); // deep purple
+            doc.text('ThermoForge Pro Results', 20, 20);
+            
+            // Case and timestamp - Soft Rose
+            doc.setFontSize(14);
+            doc.setTextColor(208, 184, 184); // soft rose
+            doc.text(`Analysis: ${currentCase.toUpperCase()}`, 20, 35);
+            doc.text(`Date: ${new Date().toLocaleString()}`, 20, 45);
+            
+            // Results - BLACK for maximum readability
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0); // BLACK
+            
+            let y = 65;
+            let resultCount = 0;
+            
+            // Add each result
+            Object.entries(results).forEach(([key, value]) => {
+                if (key !== 'status' && key !== 'chartData') {
+                    doc.text(`${key}: ${value}`, 20, y);
+                    y += 10;
+                    resultCount++;
+                    
+                    // Add new page if needed
+                    if (y > 280) {
+                        doc.addPage();
+                        y = 20;
+                        // Reset colors for new page
+                        doc.setTextColor(0, 0, 0); // BLACK
+                    }
+                }
+            });
+            
+            // If no results found
+            if (resultCount === 0) {
+                doc.text('No results available', 20, y);
+            }
+            
+            // Save the PDF
+            doc.save(`ThermoForge-${currentCase}-${Date.now()}.pdf`);
+        }
+
+        function resetAll() {
+            if (confirm('Reset everything?')) {
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
